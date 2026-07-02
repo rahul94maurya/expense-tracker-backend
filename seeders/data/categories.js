@@ -1,0 +1,16 @@
+module.exports = [
+  { name: "Food & Dining" },
+  { name: "Transportation" },
+  { name: "Housing" },
+  { name: "Shopping" },
+  { name: "Health" },
+  { name: "Entertainment" },
+  { name: "Education" },
+  { name: "Personal Care" },
+  { name: "Travel" },
+  { name: "Bills" },
+  { name: "Family" },
+  { name: "Gifts & Donations" },
+  { name: "Finance" },
+  { name: "Miscellaneous" },
+];
