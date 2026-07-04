@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.get("/", expenseController.getExpense);
 router.post("/add-expense", expenseController.addExpense);
+router.delete("/delete-expense/:id", expenseController.deleteExpense);
+router.put("/update-expense/:id", expenseController.updateExpense);
 
 router.get("/categories", expenseController.getCategories);
 router.get("/subcategories/:categoryId", expenseController.getSubcategories);

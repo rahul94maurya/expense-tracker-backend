@@ -4,7 +4,14 @@ const Subcategory = require("../modal/subcategory");
 const ExpenseMode = require("../modal/expenseMode");
 
 exports.getExpense = (req, res, next) => {
-  Expense.find()
+  const { category } = req.query;
+  const filter = {};
+  if (category) {
+    filter.category = category;
+  }
+  //above is the way to add query params and get the data from the database
+  Expense.find(filter)
+    // .select("-_id") //this is the way to select the fields to be returned
     .populate("category", "name")
     .populate("subcategory", "name")
     .populate("expenseMode", "name")
@@ -26,8 +33,14 @@ exports.getExpense = (req, res, next) => {
 };
 
 exports.addExpense = (req, res, next) => {
-  const { amount, description, category, subCategory, expenseMode, expenseDate } =
-    req.body;
+  const {
+    amount,
+    description,
+    category,
+    subCategory,
+    expenseMode,
+    expenseDate,
+  } = req.body;
 
   const expense = new Expense({
     amount,
@@ -48,7 +61,37 @@ exports.addExpense = (req, res, next) => {
     })
     .catch((err) => {
       console.error("Failed to add expense:", err);
-      res.status(500).json({ message: "Failed to add expense", error: err.message });
+      res
+        .status(500)
+        .json({ message: "Failed to add expense", error: err.message });
+    });
+};
+exports.updateExpense = (req, res, next) => {
+  const { id } = req.params;
+  const {
+    amount,
+    description,
+    category,
+    subCategory,
+    expenseMode,
+    expenseDate,
+  } = req.body;
+  Expense.findByIdAndUpdate(id, {
+    amount,
+    description,
+    category,
+    subCategory,
+    expenseMode,
+    expenseDate,
+  })
+    .then((updatedExpense) => {
+      res.status(200).json({
+        message: "Expense updated successfully",
+        expense: updatedExpense,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: "Failed to update expense", error: err });
     });
 };
 
@@ -92,5 +135,16 @@ exports.getExpenseModes = (req, res, next) => {
       res
         .status(500)
         .json({ message: "Failed to get expense modes", error: err });
+    });
+};
+
+exports.deleteExpense = (req, res, next) => {
+  const { id } = req.params;
+  Expense.findByIdAndDelete(id)
+    .then((expense) => {
+      res.status(200).json({ message: "Expense deleted successfully" });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: "Failed to delete expense", error: err });
     });
 };
