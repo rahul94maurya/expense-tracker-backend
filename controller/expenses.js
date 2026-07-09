@@ -23,9 +23,15 @@ exports.getExpense = (req, res, next) => {
         expenseDate: expense.expenseDate,
         amount: expense.amount,
         description: expense.description,
-        category: expense.category,
-        subcategory: expense.subcategory,
-        expenseMode: expense.expenseMode,
+        category: { id: expense.category._id, name: expense.category.name },
+        subcategory: {
+          id: expense.subcategory._id,
+          name: expense.subcategory.name,
+        },
+        expenseMode: {
+          id: expense.expenseMode._id,
+          name: expense.expenseMode.name,
+        },
       }));
       res.status(200).json(formattedExpense);
     })
