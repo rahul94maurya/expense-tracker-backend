@@ -1,3 +1,5 @@
+const { validationResult } = require("express-validator");
+
 const Expense = require("../modal/expense");
 const Category = require("../modal/category");
 const Subcategory = require("../modal/subcategory");
@@ -33,6 +35,12 @@ exports.getExpense = (req, res, next) => {
 };
 
 exports.addExpense = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res
+      .status(400)
+      .json({ message: errors.array()[0].msg, errors: errors.array() });
+  }
   const {
     amount,
     description,
@@ -50,7 +58,7 @@ exports.addExpense = (req, res, next) => {
     expenseMode,
     expenseDate,
   });
-
+  console.log("expense", expense);
   expense
     .save()
     .then((savedExpense) => {
