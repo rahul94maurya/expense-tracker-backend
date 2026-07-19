@@ -44,8 +44,8 @@ exports.addExpense = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res
-      .status(400)
-      .json({ message: errors.array()[0].msg, errors: errors.array() });
+      .status(422)
+      .json({ message: "Validation failed", errors: errors.array() });
   }
   const {
     amount,
@@ -64,7 +64,7 @@ exports.addExpense = (req, res, next) => {
     expenseMode,
     expenseDate,
   });
-  console.log("expense", expense);
+
   expense
     .save()
     .then((savedExpense) => {
@@ -74,13 +74,18 @@ exports.addExpense = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.error("Failed to add expense:", err);
       res
         .status(500)
         .json({ message: "Failed to add expense", error: err.message });
     });
 };
 exports.updateExpense = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res
+      .status(422)
+      .json({ message: "Validation failed", errors: errors.array() });
+  }
   const { id } = req.params;
   const {
     amount,
