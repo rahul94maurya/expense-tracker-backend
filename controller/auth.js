@@ -1,5 +1,6 @@
 const User = require("../modal/user");
 const bcrypt = require("bcrypt");
+const ApiError = require("../utils/ApiError");
 
 exports.signup = (req, res, next) => {
   const { name, email, password } = req.body;
@@ -13,7 +14,8 @@ exports.signup = (req, res, next) => {
           .json({ message: "User created successfully", userId: result._id });
       })
       .catch((err) => {
-        next(err);
+        const error = new ApiError("Failed to signup", 500, err.message);
+        next(error);
       });
   });
 };

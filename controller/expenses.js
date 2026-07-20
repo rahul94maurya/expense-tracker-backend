@@ -1,9 +1,8 @@
-const { validationResult } = require("express-validator");
-
 const Expense = require("../modal/expense");
 const Category = require("../modal/category");
 const Subcategory = require("../modal/subcategory");
 const ExpenseMode = require("../modal/expenseMode");
+const ApiError = require("../utils/ApiError");
 
 exports.getExpense = (req, res, next) => {
   const { category } = req.query;
@@ -36,17 +35,12 @@ exports.getExpense = (req, res, next) => {
       res.status(200).json(formattedExpense);
     })
     .catch((err) => {
-      res.status(500).json({ message: "Failed to get expenses", error: err });
+      const error = new ApiError("Failed to get expenses", 500, err.message);
+      next(error);
     });
 };
 
 exports.addExpense = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res
-      .status(422)
-      .json({ message: "Validation failed", errors: errors.array() });
-  }
   const {
     amount,
     description,
@@ -74,18 +68,11 @@ exports.addExpense = (req, res, next) => {
       });
     })
     .catch((err) => {
-      res
-        .status(500)
-        .json({ message: "Failed to add expense", error: err.message });
+      const error = new ApiError("Failed to add expense", 500, err.message);
+      next(error);
     });
 };
 exports.updateExpense = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res
-      .status(422)
-      .json({ message: "Validation failed", errors: errors.array() });
-  }
   const { id } = req.params;
   const {
     amount,
@@ -110,7 +97,8 @@ exports.updateExpense = (req, res, next) => {
       });
     })
     .catch((err) => {
-      res.status(500).json({ message: "Failed to update expense", error: err });
+      const error = new ApiError("Failed to update expense", 500, err.message);
+      next(error);
     });
 };
 
@@ -123,7 +111,8 @@ exports.getCategories = (req, res, next) => {
       res.status(200).json(formattedCategories);
     })
     .catch((err) => {
-      res.status(500).json({ message: "Failed to get categories", error: err });
+      const error = new ApiError("Failed to get categories", 500, err.message);
+      next(error);
     });
 };
 
@@ -136,9 +125,12 @@ exports.getSubcategories = (req, res, next) => {
       res.status(200).json(formattedSubcategories);
     })
     .catch((err) => {
-      res
-        .status(500)
-        .json({ message: "Failed to get subcategories", error: err });
+      const error = new ApiError(
+        "Failed to get subcategories",
+        500,
+        err.message,
+      );
+      next(error);
     });
 };
 
@@ -151,9 +143,12 @@ exports.getExpenseModes = (req, res, next) => {
       res.status(200).json(formattedExpenseModes);
     })
     .catch((err) => {
-      res
-        .status(500)
-        .json({ message: "Failed to get expense modes", error: err });
+      const error = new ApiError(
+        "Failed to get expense modes",
+        500,
+        err.message,
+      );
+      next(error);
     });
 };
 
@@ -164,6 +159,7 @@ exports.deleteExpense = (req, res, next) => {
       res.status(200).json({ message: "Expense deleted successfully" });
     })
     .catch((err) => {
-      res.status(500).json({ message: "Failed to delete expense", error: err });
+      const error = new ApiError("Failed to delete expense", 500, err.message);
+      next(error);
     });
 };
