@@ -1,5 +1,5 @@
 const User = require("../modal/user");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const ApiError = require("../utils/ApiError");
 
 exports.signup = (req, res, next) => {
@@ -18,4 +18,36 @@ exports.signup = (req, res, next) => {
         next(error);
       });
   });
+};
+
+exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findOne({ email: email })
+    .then((user) => {
+      return bcrypt.compare(password, user.password).then((result) => {
+        if (!result) {
+          const error = new ApiError("Invalid password", 401);
+          return next(error);
+        }
+        res
+          .status(200)
+          .json({
+            message: "Login successful",
+            data: {
+              accessToken: "1234567890",
+              userId: user._id,
+              name: user.name,
+              email: user.email,
+            },
+          })
+          .catch((err) => {
+            const error = new ApiError("Failed to login", 500, err.message);
+            next(error);
+          });
+      });
+    })
+    .catch((err) => {
+      const error = new ApiError("Failed to login", 500, err.message);
+      next(error);
+    });
 };

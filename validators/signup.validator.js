@@ -1,5 +1,7 @@
+const { body } = require("express-validator");
+const User = require("../modal/user");
 exports.signupValidator = [
-  body("username", "Username is required").notEmpty(),
+  body("name", "Name is required").notEmpty(),
   body("email")
     .isEmail()
     .withMessage("Please enter a valid email address")
