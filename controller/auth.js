@@ -1,6 +1,7 @@
 const User = require("../modal/user");
 const bcrypt = require("bcryptjs");
 const ApiError = require("../utils/ApiError");
+const jwt = require("jsonwebtoken");
 
 exports.signup = (req, res, next) => {
   const { name, email, password } = req.body;
@@ -29,12 +30,15 @@ exports.login = (req, res, next) => {
           const error = new ApiError("Invalid password", 401);
           return next(error);
         }
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
         res
           .status(200)
           .json({
             message: "Login successful",
             data: {
-              accessToken: "1234567890",
+              accessToken: token,
               userId: user._id,
               name: user.name,
               email: user.email,

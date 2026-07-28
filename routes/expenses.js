@@ -6,19 +6,26 @@ const Category = require("../modal/category");
 const Subcategory = require("../modal/subcategory");
 const { expenseValidator } = require("../validators/expense.validator");
 const { validate } = require("../validators/validate");
+const { authenticate } = require("../middleware/authenticate");
 
 const router = express.Router();
 
-router.get("/", expenseController.getExpense);
+router.get("/", authenticate, expenseController.getExpense);
 router.post(
   "/add-expense",
+  authenticate,
   expenseValidator,
   validate,
   expenseController.addExpense,
 );
-router.delete("/delete-expense/:id", expenseController.deleteExpense);
+router.delete(
+  "/delete-expense/:id",
+  authenticate,
+  expenseController.deleteExpense,
+);
 router.put(
   "/update-expense/:id",
+  authenticate,
   expenseValidator,
   validate,
   expenseController.updateExpense,
